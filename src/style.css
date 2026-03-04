@@ -1,0 +1,161 @@
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  -webkit-user-select: none; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  background: #000;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ─── Scene image — full viewport, oversized for pan room ────────── */
+
+#scene-img,
+#scene-img-next {
+  position: fixed;
+  width: 140vw;
+  height: 120vh;
+  left: -20vw;
+  top: -10vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  will-change: transform, filter, opacity;
+  touch-action: none;
+}
+
+#scene-img { z-index: 1; }
+#scene-img-next { z-index: 1; opacity: 0; pointer-events: none; }
+
+/* ─── Phone clip mask — blacks out area outside phone lines ──────── */
+
+#phone-clip {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  box-shadow: inset calc(50vw - min(422px, calc((100vh - 40px) * 9 / 19)) / 2) 0 0 0 #000,
+              inset calc(-50vw + min(422px, calc((100vh - 40px) * 9 / 19)) / 2) 0 0 0 #000;
+}
+
+/* When bleed is on, hide the clip */
+body.bleed #phone-clip { display: none; }
+
+/* ─── Debug toggle ───────────────────────────────────────────────── */
+
+#debug-toggle {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#debug-toggle input {
+  width: 12px;
+  height: 12px;
+  cursor: pointer;
+}
+
+@media (max-width: 430px) {
+  #debug-toggle { display: none; }
+  #phone-clip { display: none; }
+}
+
+/* ─── Phone boundary lines ───────────────────────────────────────── */
+
+#phone-line-left,
+#phone-line-right {
+  position: fixed;
+  top: 0;
+  width: 1px;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 8;
+  pointer-events: none;
+}
+
+#phone-line-left {
+  left: calc(50% - min(422px, calc((100vh - 40px) * 9 / 19)) / 2);
+}
+
+#phone-line-right {
+  left: calc(50% + min(422px, calc((100vh - 40px) * 9 / 19)) / 2);
+}
+
+/* Hide on mobile — already full width */
+@media (max-width: 430px) {
+  #phone-line-left,
+  #phone-line-right { display: none; }
+}
+
+/* ─── Narrative bar — full-width strip across top ────────────────── */
+
+#narrative {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  padding: 40px 20px 16px;
+  background: rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
+
+#narrative-text {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.45;
+  color: #fff;
+  text-align: center;
+  max-width: 320px;
+  margin: 0 auto;
+  text-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.9),
+    0 4px 16px rgba(0, 0, 0, 0.6),
+    0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* ─── Choice text ─────────────────────────────────────────────────── */
+
+#choice {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0;
+  text-align: center;
+}
+
+#choice-text {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.9),
+    0 4px 16px rgba(0, 0, 0, 0.6),
+    0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+#choice-punct {
+  display: inline-block;
+  width: 0.4em;
+  text-align: left;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.9),
+    0 4px 16px rgba(0, 0, 0, 0.6),
+    0 8px 32px rgba(0, 0, 0, 0.3);
+}
