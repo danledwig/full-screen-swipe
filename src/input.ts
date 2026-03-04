@@ -3,12 +3,13 @@ export interface InputState {
   pointerId: number;
   startX: number;
   dx: number;
+  speed: number;
 }
 
-// Phone line positions (80% of half-width, matching CSS)
+// Phone line positions (55% of half-width)
 function calcPhoneLines(): { left: number; right: number; halfWidth: number } {
   const phoneWidth = Math.min(422, (window.innerHeight - 40) * 9 / 19);
-  const halfWidth = phoneWidth * 0.5 * 0.8;
+  const halfWidth = phoneWidth * 0.5 * 0.55;
   const center = window.innerWidth / 2;
   return { left: center - halfWidth, right: center + halfWidth, halfWidth };
 }
@@ -22,10 +23,11 @@ export function createInput(el: HTMLElement): InputState {
     pointerId: -1,
     startX: 0,
     dx: 0,
+    speed: 0,
   };
 
-  let maxRight = 0;
-  let maxLeft = 0;
+  let prevDx = 0;
+  let prevTime = 0;
 
   el.addEventListener('pointerdown', (e: PointerEvent) => {
     if (state.active) return;
@@ -33,30 +35,31 @@ export function createInput(el: HTMLElement): InputState {
     state.pointerId = e.pointerId;
     state.startX = e.clientX;
     state.dx = 0;
-    // Per-direction limits based on distance to each phone line
-    maxRight = phoneLines.right - e.clientX;
-    maxLeft = e.clientX - phoneLines.left;
+    state.speed = 0;
+    prevDx = 0;
+    prevTime = performance.now();
     el.setPointerCapture(e.pointerId);
   }, { passive: true });
 
   el.addEventListener('pointermove', (e: PointerEvent) => {
     if (!state.active || e.pointerId !== state.pointerId) return;
-    const raw = e.clientX - state.startX;
-    if (raw >= 0) {
-      state.dx = raw <= maxRight
-        ? raw
-        : maxRight + (raw - maxRight) * 0.15;
-    } else {
-      const absRaw = -raw;
-      state.dx = absRaw <= maxLeft
-        ? raw
-        : -(maxLeft + (absRaw - maxLeft) * 0.1);
+    state.dx = e.clientX - state.startX;
+
+    const now = performance.now();
+    const dt = now - prevTime;
+    if (dt > 0) {
+      const v = Math.abs(state.dx - prevDx) / dt;
+      state.speed = state.speed * 0.5 + v * 0.5;
+      prevDx = state.dx;
+      prevTime = now;
     }
   }, { passive: true });
 
   const onUp = (e: PointerEvent) => {
     if (e.pointerId !== state.pointerId) return;
     state.active = false;
+    prevDx = 0;
+    prevTime = 0;
   };
 
   el.addEventListener('pointerup', onUp, { passive: true });

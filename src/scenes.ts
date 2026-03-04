@@ -55,20 +55,34 @@ function shuffle<T>(arr: T[]): T[] {
   return arr;
 }
 
-const shuffled = shuffle([...SCENES]);
-let sceneIndex = 0;
+let deck = shuffle([...SCENES]);
+let deckIndex = 0;
+
+function refillDeck(): void {
+  const lastImage = deck[deck.length - 1].image;
+  deck = shuffle([...SCENES]);
+  if (deck[0].image === lastImage && deck.length > 1) {
+    const swap = 1 + Math.floor(Math.random() * (deck.length - 1));
+    const tmp = deck[0];
+    deck[0] = deck[swap];
+    deck[swap] = tmp;
+  }
+  deckIndex = 0;
+}
 
 export function getCurrentScene(): SceneData {
-  return shuffled[sceneIndex % shuffled.length];
+  return deck[deckIndex];
 }
 
 export function advanceScene(): SceneData {
-  sceneIndex++;
+  deckIndex++;
+  if (deckIndex >= deck.length) refillDeck();
   return getCurrentScene();
 }
 
 export function getNextScene(): SceneData {
-  return shuffled[(sceneIndex + 1) % shuffled.length];
+  if (deckIndex + 1 >= deck.length) return deck[0];
+  return deck[deckIndex + 1];
 }
 
 export function preloadImage(src: string): void {

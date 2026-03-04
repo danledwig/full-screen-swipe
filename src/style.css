@@ -42,6 +42,10 @@ html, body {
 /* When bleed is on, hide the clip */
 body.bleed #phone-clip { display: none; }
 
+@media (max-width: 430px) {
+  #phone-clip { display: none; }
+}
+
 /* ─── Debug toggle ───────────────────────────────────────────────── */
 
 #debug-toggle {
@@ -67,7 +71,6 @@ body.bleed #phone-clip { display: none; }
 
 @media (max-width: 430px) {
   #debug-toggle { display: none; }
-  #phone-clip { display: none; }
 }
 
 /* ─── Phone boundary lines ───────────────────────────────────────── */
@@ -97,31 +100,66 @@ body.bleed #phone-clip { display: none; }
   #phone-line-right { display: none; }
 }
 
-/* ─── Narrative bar — full-width strip across top ────────────────── */
+/* ─── Speech bubble ──────────────────────────────────────────────── */
 
 #narrative {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 10;
-  padding: 40px 20px 16px;
-  background: rgba(0, 0, 0, 0.8);
+  width: calc(min(422px, (100vh - 40px) * 9 / 19) - 30px);
+  background: #fff;
+  border: 2px solid #222;
+  border-radius: 14px;
+  padding: 10px 14px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   pointer-events: none;
 }
 
+/* Border triangle */
+#narrative::before {
+  content: '';
+  position: absolute;
+  bottom: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-top: 9px solid #222;
+  transition: opacity 150ms ease-out;
+}
+
+/* Fill triangle */
+#narrative::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 7px solid #fff;
+  transition: opacity 150ms ease-out;
+}
+
+/* Hide triangle during scene transitions */
+#narrative.no-arrow::before,
+#narrative.no-arrow::after { opacity: 0; }
+
+@media (max-width: 430px) {
+  #narrative { width: calc(100vw - 40px); }
+}
+
 #narrative-text {
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.45;
-  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #111;
   text-align: center;
-  max-width: 320px;
-  margin: 0 auto;
-  text-shadow:
-    0 1px 4px rgba(0, 0, 0, 0.9),
-    0 4px 16px rgba(0, 0, 0, 0.6),
-    0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 /* ─── Choice text ─────────────────────────────────────────────────── */
@@ -135,10 +173,13 @@ body.bleed #phone-clip { display: none; }
   pointer-events: none;
   opacity: 0;
   text-align: center;
+  width: 80%;
+  max-width: calc(min(422px, (100vh - 40px) * 9 / 19) - 40px);
+  padding: 0 20px;
 }
 
 #choice-text {
-  font-size: 28px;
+  font-size: 14px;
   font-weight: 700;
   color: #fff;
   text-shadow:
@@ -151,7 +192,7 @@ body.bleed #phone-clip { display: none; }
   display: inline-block;
   width: 0.4em;
   text-align: left;
-  font-size: 28px;
+  font-size: 14px;
   font-weight: 700;
   color: #fff;
   text-shadow:
